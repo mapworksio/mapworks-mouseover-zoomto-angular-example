@@ -1,0 +1,7 @@
+{
+  "title": "Mapworks Auth Example (Angular)",
+  "description": "This example illustrates utilising Mapworks Auth with an Angular web application. It requires sign-in prior to the use of a Mapworks map component (via protected Angular routes).",
+  "iconUrl": "https://mapworks.io/wp-content/uploads/2023/05/mapworks-logo-64x64-1.png",
+  "tags": ["mapworks", "angular", "typescript"],
+  "published": true
+}
