@@ -1,6 +1,26 @@
-# Sandbox
+# Mapworks Auth Example (Angular)
+
+This example illustrates utilising Mapworks Auth with an Angular web application.
+
+The specfic use case includes accessing auth via Mapworks, and requiring sign-in prior to the use of a Mapworks map component (via protected Angular routes).
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.0.
+
+## Running in CodeSandbox
+
+This example may be run in CodeSandbox:
+
+- TBA
+
+## Using the Mapworks code
+
+The [src/app/mapworks](src/app/mapworks) subfolder may be copied and used directly in web application code.
+
+- [src/app/mapworks](src/app/mapworks) - this contains the `MapworksMapService` class used to manage auth and map initialisation.
+- [src/main.ts](src/main.ts) - contains code to handle the OAuth2/OIDC callback used as part of the sign in process (this will need to be incorporated or use `login-callback.html`)
+- [src/assets/login-callback.html](src/assets/login-callback.html) - this handles the OAuth2/OIDC callback used as part of the sign in process (preferred in non-CodeSandbox environments)
+
+Note that due to constraints of the CodeSandbox environment, the OAuth2/OIDC callback is handled in [src/main.ts](src/main.ts) - for non-CodeSandbox you are probably better utilising the static `login-callback.html` (`app-config.ts` needs to be updated to reflect this).
 
 ## Development server
 
