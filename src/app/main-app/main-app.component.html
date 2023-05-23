@@ -1,0 +1,29 @@
+<!-- <div style="display: flex; flex-direction: column; height: 100%;">
+  <h1>Mapworks Auth Example - User Sign In before loading map</h1>
+  <p>
+    User: <span id="user"></span>
+    <br/>Access Token: <span id="access-token"></span>
+  </p>
+  <div>
+    <button id="signin-button">Sign In</button>
+    <button id="signout-button">Sign Out</button>
+    <button id="show-map-button">Show Map</button>
+    <input id="show-map-automatically" type="checkbox"> Show map automatically if signed in
+  </div>
+</div> -->
+
+<div style="display: flex; flex-direction: column; height: 100%;">
+
+  <div>
+    User: <span *ngIf="user$ | async as u else elseBlock">{{ u.profile.given_name || u.profile.preferred_username }} {{ u.profile.family_name || '' }}</span>
+    <ng-template #elseBlock><em>Not signed in</em></ng-template>
+    <br/>Access Token: <span *ngIf="accessToken$ | async as at" id="access-token">{{ at }}</span>
+  </div>
+
+  <div style="margin-top: 8px;">
+    <button (click)="doSignOut()">Sign Out</button>
+  </div>
+
+  <div #map class="xmap" id="xmapworks-map" style="flex-grow: 1; margin-top: 8px; margin-bottom: 0px;"></div>
+
+</div>
