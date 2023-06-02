@@ -1,4 +1,4 @@
-# Mapworks Mouseover and Mouse Click Example (Angular)
+# Mapworks Mouseover, Mouse-click and Zoom-to Example (Angular)
 
 This example illustrates writing a Mapworks Studio web application to customise:
 
