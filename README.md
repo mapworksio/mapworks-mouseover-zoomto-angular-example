@@ -17,7 +17,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 This example may be run in CodeSandbox:
 
-- TBA
+- https://codesandbox.io/p/github/mapworksio/mapworks-mouseover-zoomto-angular-example
 
 
 ## Map "feature" events
