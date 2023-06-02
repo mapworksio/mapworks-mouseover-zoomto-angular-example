@@ -28,6 +28,11 @@ export class SignInComponent implements OnInit {
   ngOnInit() {
   }
 
+  doGuestSignIn() {
+    console.log('doGuestSignIn()');
+    this.mapService.mapService.signinAnonymous();
+  }
+
   doSignIn() {
     console.log('doSignIn()');
     this.mapService.mapService.signinPopup();

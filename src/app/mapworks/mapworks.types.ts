@@ -369,6 +369,9 @@ export declare class MapworksMap {
   public login(args?: SigninPopupArgs): Promise<MapworksUser>;
 
   ///
+  public loginAnonymous(): Promise<MapworksUser>;
+
+  ///
   public logout(args?: SignoutRedirectArgs): Promise<void>;
 
   ///

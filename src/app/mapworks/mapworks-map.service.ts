@@ -179,6 +179,23 @@ export class MapworksMapService {
   }
 
   ///
+  public async signinAnonymous(): Promise<MapworksUser | null> {
+    if(this.defaultLoginProvider?.anonymousUser) {
+      if (this.map) {
+        return await this.map.loginAnonymous();
+      } else {
+        return (await this.getUserManager()).signinSilent({
+          extraQueryParams: {
+            login_hint: this.defaultLoginProvider?.anonymousUser
+          }
+        });
+      }
+    } else {
+      return null;
+    }
+  }
+
+  ///
   public async handleSigninCallback() {
     await this.loadStudio();
     Studio.OidcClient.signinCallback();

@@ -4,8 +4,8 @@
       <div>
         <pre>{{ mapService.studioConfig.mapworksPath }}</pre>
       </div>
-      <div style="padding-top: 8px;">
-        <!-- XXX TODO Add sign in by redirect -->
+      <div style="padding-top: 8px; display: flex; flex-direction: row; justify-content: center; gap: 16px;">
+        <button (click)="doGuestSignIn()">Guest</button>
         <button (click)="doSignIn()">Sign In</button>
       </div>
     </div>
