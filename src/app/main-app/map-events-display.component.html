@@ -1,0 +1,29 @@
+<div style="display: flex; flex-direction: column; gap: 4px;">
+
+  <div style="display: flex; gap: 8px;">
+    <span>Customised Layer:</span>
+    <span *ngIf="layer$ | async as layer"><em>{{ layer.getTitle() }}</em> (reference ID: <code>{{ layer.getReferenceId() }}</code>)</span>
+  </div>
+
+  <div style="display: flex; gap: 8px;">
+    <span>Mouseover Event:</span>
+    <app-map-events-display-feature [eventFeature$]="mouseoverFeature$"></app-map-events-display-feature>
+  </div>
+
+  <div style="display: flex; gap: 8px;">
+    <span>Mouse Tooltip Event:</span>
+    <app-map-events-display-feature [eventFeature$]="mouseTooltipFeature$"></app-map-events-display-feature>
+  </div>
+
+  <div style="display: flex; gap: 8px;">
+    <span>Mouse Click Event:</span>
+    <app-map-events-display-feature [eventFeature$]="mouseClickFeature$"></app-map-events-display-feature>
+  </div>
+
+  <div style="display: flex; gap: 8px; margin-top: 8px;">
+    <button (click)="doIdentifyLayer()">Identify Layer</button>
+    <button (click)="doZoomTo()">Zoom to Random Feature</button>
+    <button (click)="doRemoveMarker()">Remove Feature Marker</button>
+  </div>
+
+</div>

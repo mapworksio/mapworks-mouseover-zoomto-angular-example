@@ -1,0 +1,41 @@
+<div #mouseover class="mouseover-container">
+
+  <container-element [ngSwitch]="mode">
+
+    <div *ngSwitchCase="'logo'" style="display: flex; flex-direction: column; gap: 6px; text-align: center;">
+      <div style="margin-top: 8px; margin-bottom: 8px;">
+        <img src="assets/mapworks-logo-64x64.png"/>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="'loading'" style="display: flex; flex-direction: column; gap: 6px; text-align: center;">
+      <div style="margin-top: 8px; margin-bottom: 8px;">
+        <img src="assets/mapworks-logo-64x64.png"/>
+      </div>
+      <div>Simulated 2s loading time...</div>
+      <div>
+        <img src="assets/loading.svg"/>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="'display'">
+      <div *ngIf="provider.context$ | async as context" style="display: flex; flex-direction: column; gap: 6px;">
+
+          <div style="text-align: center; margin-top: 8px; margin-bottom: 8px;">
+            <img src="assets/mapworks-logo-64x64.png"/>
+          </div>
+
+          <div>
+            <span class="mouseover-title">Layer:</span> {{ context.displayLayerName }}
+          </div>
+
+          <div>
+            <span class="mouseover-title">Feature:</span> {{ context.displayName }}
+          </div>
+
+      </div>
+    </div>
+
+  </container-element>
+
+</div>

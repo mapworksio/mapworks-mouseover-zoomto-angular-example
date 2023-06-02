@@ -14,7 +14,7 @@ export class SignInComponent implements OnInit {
   constructor(
     private router: Router,
     public readonly mapService: MapworksMapService,
-  ) { 
+  ) {
     this.mapService.mapService.user$.pipe(
       takeUntilDestroyed(),
       tap((user) => {

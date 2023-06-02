@@ -4,24 +4,48 @@ import {
   User,
   UserManager,
 } from 'oidc-client-ts';
-import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, from, fromEvent, map, of, switchMap, withLatestFrom } from 'rxjs';
 import {
   MapworksMap,
+  MapworksStudio,
   MapworksStudioConfigOptions,
   MapworksUser,
   MapworksUserManager,
   MapworksUserManagerSettings,
 } from './mapworks.types';
 
-declare let Studio: any;
+declare let Studio: MapworksStudio;
 
 const DEFAULT_MAPWORKS_API_ORIGIN = 'https://api.mapworks.io';
 
 const DEFAULT_MAP_NAME = 'default';
 
+/**
+ * Services which loads Mapworks Studio and handled initialisation of
+ * Mapworks auth, Mapworks map components and the like.
+ */
 export class MapworksMapService {
   ///
   public readonly DEFAULT_MAPWORKS_API_ORIGIN = DEFAULT_MAPWORKS_API_ORIGIN;
+
+  /**
+   * Available after `loadStudio()` called, either directly or via
+   * another method that ensures Studio is loaded
+   * (includes `initUserManager()` and `initMap()`).
+   *
+   * @note If you have loaded auth, a map or similar Mapworks objects
+   *       you can assume the Studio code has been loaded
+   */
+  public get Studio(): MapworksStudio | undefined {
+    return window.Studio;
+  }
+
+  /**
+   * Emits the loadedMapworks Studio library code after it has been loaded,
+   * initiating the load if required.
+   * @see loadStudio()
+   */
+  public readonly Studio$ = of(true).pipe(switchMap(() => this.loadStudio()));
 
   private userSubj = new BehaviorSubject<MapworksUser | null>(null);
   private accessTokenSubj = new BehaviorSubject<string | undefined>(undefined);
@@ -43,14 +67,28 @@ export class MapworksMapService {
 
   private userManager?: MapworksUserManager;
 
-  private userLoadedCb?: () => void;
-
   private maps: Record<string, MapworksMap> = {};
+
+  private mapsSubj = new BehaviorSubject(this.maps);
+
+  /// An Observable of the array of MapworksMaps that have been initialised
+  public readonly maps$ = this.mapsSubj.asObservable();
+
+  private mapSubj = new ReplaySubject<MapworksMap>(1);
+
+  /// An Observable that emits the default map, after it is initialised and ready
+  public readonly map$ = this.mapSubj.pipe(
+    switchMap(map_ => {
+      return map_.isReady()
+        ? of(map_)
+        : fromEvent(map_, 'ready').pipe(map((_) => map_));
+    }),
+  );
 
   /**
    * Returns a reference to the default map (named `default`).
    */
-  get map(): MapworksMap {
+  public get map(): MapworksMap | undefined {
     return this.maps[DEFAULT_MAP_NAME];
   }
 
@@ -60,6 +98,8 @@ export class MapworksMapService {
   getMap(name = DEFAULT_MAP_NAME): MapworksMap {
     return this.maps[name];
   }
+
+  private userLoadedCb?: () => void;
 
   /**
    * Construct an instance of MapworksMapService, optionally
@@ -76,16 +116,16 @@ export class MapworksMapService {
    *
    * This loads the Mapworks Studio library code.
    */
-  public async loadStudio(): Promise<void> {
+  public async loadStudio(): Promise<MapworksStudio> {
     if (window.Studio) {
-      return;
+      return window.Studio;
     }
 
     return new Promise((resolve, reject) => {
       let toLoad = 2;
       const onLoad = () => {
         toLoad--;
-        return toLoad || resolve();
+        return toLoad || resolve(window.Studio);
       };
       const script = document.createElement('script');
       script.type = 'text/javascript';
@@ -161,14 +201,16 @@ export class MapworksMapService {
    * @param additionalConfig additional web interface configuration
    */
   public async initMap(
-    elementOrSelector: string | Object,
+    elementOrSelector: string | HTMLElement,
     config: MapworksStudioConfigOptions,
     additionalConfig?: { [n: string]: any },
     name = DEFAULT_MAP_NAME
   ): Promise<MapworksMap> {
     await this.loadStudio();
-    const map = new Studio.init(elementOrSelector, config, additionalConfig);
+    const map = Studio.init(elementOrSelector, config, additionalConfig);
     this.maps[name] = map;
+    this.mapsSubj.next(this.maps);
+    if (name === DEFAULT_MAP_NAME) this.mapSubj.next(map);
     if (this.userManager) {
       map['_userManager'] = this.userManager;
     }

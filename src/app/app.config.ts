@@ -1,12 +1,19 @@
+import { InjectionToken } from "@angular/core";
+import { MapworksAccess, MapworksStudioConfigOptions } from "./mapworks";
+
 /*
  * this configuration needs to be updated if you are running locally or forked
  */
 
-import { MapworksAccess, MapworksStudioConfigOptions } from "./mapworks";
+export const appConfig = {
+  mapworksOrgUrl: 'https://app.mapworks.io',
+  client_id: '3mvor82v8k8f6nbi4f8bpihsom',
+  mapRef: 'map-osm-public',
+  layerRef: 'ne_10m_populated_places',
+};
 
-const mapworksOrgUrl = 'https://app.mapworks.io';
-const client_id = '3mvor82v8k8f6nbi4f8bpihsom';
-const mapRef = 'map-osm-public';
+export type AppConfig = typeof appConfig;
+export const APP_CONFIG = new InjectionToken<AppConfig>('APP_CONFIG');
 
 /*
  * this configuration should generally work but may be adapted for your use
@@ -37,19 +44,25 @@ const scope = [
 ].join(' ');
 
 export const studioConfig: MapworksStudioConfigOptions = {
-  mapworksPath: mapworksOrgUrl,
-  mapRef,
+  mapworksPath: appConfig.mapworksOrgUrl,
+  mapRef: appConfig.mapRef,
   access: MapworksAccess.Anonymous,
 
-  navigationControl: false,
-  timeControl: false,
-  scaleControl: true,
-  toolbarControl: true,
-  zoomControl: false,
+  zoomControl: false, // defaults is true
+  scaleControl: true, // default is false
+  // tooltipControl: true, // default is true
+  timeControl: false, // default is false
+  offlineIndicatorControl: true, // default is true
+
+  navigationControl: false, // default is false
+  appNavigationControl: true, // default is true
+
+  toolbarControl: true, // default is true
+  simpleLayersPanel: false, // default is false
 
   mapworksLoginProvider: {
-    authority: mapworksOrgUrl, // /.well-known/openid-configuration
-    client_id,
+    authority: appConfig.mapworksOrgUrl, // /.well-known/openid-configuration
+    client_id: appConfig.client_id,
     redirect_uri: appUrl + '/?callback', // '/public/login-callback.html',
     silent_redirect_uri: appUrl + '/?callback', // '/public/login-callback.html',
     popup_redirect_uri: appUrl + '/?callback', // '/public/login-callback.html',
@@ -70,3 +83,4 @@ export const studioConfig: MapworksStudioConfigOptions = {
     loadUserInfo: true,
   },
 };
+

@@ -11,7 +11,7 @@ import {
 } from './mapworks-auth-guard.guard';
 
 import { MAPWORKS_STUDIO_CONFIG_OPTIONS } from './mapworks-map.service';
-import { studioConfig } from './app.config';
+import { APP_CONFIG, appConfig, studioConfig } from './app.config';
 
 const routerConfig: ExtraOptions = {
   preloadingStrategy: PreloadAllModules,
@@ -22,6 +22,7 @@ const routerConfig: ExtraOptions = {
   declarations: [AppComponent],
   imports: [BrowserModule, RouterModule.forRoot(appRoutes, routerConfig)],
   providers: [
+    { provide: APP_CONFIG, useValue: appConfig },
     { provide: MAPWORKS_STUDIO_CONFIG_OPTIONS, useValue: studioConfig },
     CanActivateIfSignedInGuard,
     CanActivateIfNotSignedInGuard,
