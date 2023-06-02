@@ -1,6 +1,6 @@
 {
-  "title": "Mapworks Auth Example (Angular)",
-  "description": "This example illustrates utilising Mapworks Auth with an Angular web application. It requires sign-in prior to the use of a Mapworks map component (via protected Angular routes).",
+  "title": "Mapworks Mouseover and Mouse Click Example (Angular)",
+  "description": "This example illustrates writing a Mapworks Studio web application to customise mouseover, tooltip and mouse-click display. A custom animated zoom to feature operation with a custom SVG marker is also included.",
   "iconUrl": "https://mapworks.io/wp-content/uploads/2023/05/mapworks-logo-64x64-1.png",
   "tags": ["mapworks", "angular", "typescript"],
   "published": true
