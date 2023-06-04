@@ -2,13 +2,12 @@
 
 This example illustrates writing a Mapworks Studio web application to customise:
 
-1. Mouseover, tooltip and mouse-click display; and
+1. Mouseover, tooltip and mouse-click events & display customisation; and
 2. The webapp initiated *zoom to feature* operation with a custom marker to
    highlight the point feature centred on the map. 
    In this example, each time this operation s a random feature is chosen 
 
-The specfic use case includes accessing auth via Mapworks, and requiring
-sign-in prior to the use of a Mapworks map component (via protected Angular routes).
+The use case also includes Mapworks user auth within the Angular framework.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.0.
 
@@ -20,10 +19,45 @@ This example may be run in CodeSandbox:
 - https://codesandbox.io/p/github/mapworksio/mapworks-mouseover-zoomto-angular-example
 
 
+## Mapworks Community
+
+If you have any questions, please feel free to join the discussion on this
+[Mapworks Community discussion topic](https://community.mapworks.io/).
+
+
+## Application configuration
+
+As configured, this example web application makes use of the following Mapworks resources:
+
+- Organisation: https://app.mapworks.io/
+- Application: [Mapworks Example Application](https://app.mapworks.io/settings/application/an0raTjbw6A6Kno8s8Bw2/details)
+- Map: [OpenStreetMap](https://app.mapworks.io/content/#/map/AXBR6sWIAAA2ac12AAAA) (`map-osm-public`)
+
+The application configuration (in [src/app/app.config.ts](src/app/app.config.ts)) is as follows:
+
+```ts
+export const appConfig = {
+  mapworksOrgUrl: 'https://app.mapworks.io',
+  client_id: '3mvor82v8k8f6nbi4f8bpihsom',
+  mapRef: 'map-osm-public',
+  layerRef: 'ne_10m_populated_places',
+};
+```
+
+Notes:
+
+1. This application has been configured in the to operation when running locally
+   (http://localhost:4200) and when running on CodeSandbox (link above).
+
+2. If the CodeSandbox application is forked (and as a result, will be accessed on a
+   different web application URL) the Mapworks Application `client_id` will need to
+   updated to an application configured in your Mapworks Organisation.
+
+
 ## Map "feature" events
 
 A Mapworks map provides a multitude of events relating to the user's interaction
-with the map.
+with the map. These may be listened to by applications.
 
 We focus on three in this example, being:
 
@@ -43,7 +77,7 @@ We focus on three in this example, being:
    the Mapworks server) and displays them in tabular form.
 
 As well as the default displays on the map, as described above, each of these events are 
-available in code, and the example webapp displays them as follows:
+available in code in this example, and the webapp displays them as follows:
 
 <img src="docs/assets/mapworks-mouse-event-display.png" width="600">
 
@@ -52,8 +86,9 @@ Refer to the following in the code:
 - [src/app/main-app/map-events-display.component.ts](src/app/main-app/map-events-display.component.ts) -
   listens to the `MapworksMap` events and displays in the webapp.
 
-The following is an example of a simple tooltip and mouse-click display for the OSM
-*Populated Places* layer, as used in this example:
+The following screenshots demonstrate the *out-of-the-box* behaviour of the Studio map application for
+a simple tooltip and mouse-click display for the OSM *Populated Places* layer (as used throughout
+this example):
 
 <img src="docs/assets/default-tooltip.png" width="500">
 <img src="docs/assets/default-mouseclick.png" width="500">
@@ -133,7 +168,7 @@ displays:
 
 ## Webapp initiated *Zoom to feature*
 
-This example webapp performs the following:
+This part of the the example webapp performs the following:
 
 1. Random selection of a map feature from within the OSM *Populated Places* layer.
 
@@ -141,9 +176,9 @@ This example webapp performs the following:
    on the location of the selected feature.
 
 3. Placement of a custom marker, utilising an animated SVG, to highlight the
-   feature on the map.
+   feature on the map. Refer to the SVG [marker](docs/assets/marker.svg) icon used:
 
-   ![marker](docs/assets/marker.svg)
+   <img src="docs/assets/marker-example.png" width="200">
 
 Refer to the following in the code:
 
@@ -163,6 +198,14 @@ The [src/app/mapworks](src/app/mapworks) subfolder may be copied and used direct
 - [src/assets/login-callback.html](src/assets/login-callback.html) - this handles the OAuth2/OIDC callback used as part of the sign in process (preferred in non-CodeSandbox environments)
 
 Note that due to constraints of the CodeSandbox environment, the OAuth2/OIDC callback is handled in [src/main.ts](src/main.ts) - for non-CodeSandbox you are probably better utilising the static `login-callback.html` (`app-config.ts` needs to be updated to reflect this).
+
+
+## Other Examples
+
+Please also see the following related examples:
+
+1. [Mapworks Auth Example - User Sign In before loading map - Developers - Mapworks Community](https://community.mapworks.io/t/mapworks-auth-example-user-sign-in-before-loading-map/30)
+
 
 ## Development server
 
