@@ -131,7 +131,7 @@ export class MapEventsDisplayComponent {
           // filter: filter,
           // query: query,
           include: ['id'],
-          size: 10,
+          size: 1,
           from,
         },
       ],
@@ -142,18 +142,10 @@ export class MapEventsDisplayComponent {
 
     const feature = result?.data?.[0]?.data?.[0]; // XXX TODO Types
 
-    const extent = feature?.extent;
-    if (extent) {
-      // zoom to (with animation), then highlight with marker
-      map.animateTo({
-        extent,
-        targetScale: ((<any>layer).getMaxScale() + (<any>layer).getMinScale()) / 2,
-        callback: () => {
-          const location = map.getViewCenter();
-          this.mapPointMarker?.placeMarker(location);
-        },
-      });
-    }
+    const [f] = await layer.downloadFeatures([feature.id]);
+    await f.zoom();
+    const location = map.getViewCenter();
+    this.mapPointMarker?.placeMarker(location);
   }
 
   doRemoveMarker() {
