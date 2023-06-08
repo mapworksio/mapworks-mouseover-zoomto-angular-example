@@ -65,8 +65,8 @@ export class MapPointMarker {
         template: this.template,
         offset: {
           // based on the size of the SVG marker
-          x: -100,
-          y: -100,
+          x: -70,
+          y: -70,
         },
         updateEvent: 'navigation:zoom navigation:pan navigation:zoompan navigation:stabilised',
         endEvent: '', // could use 'mouse:click' or other map event
