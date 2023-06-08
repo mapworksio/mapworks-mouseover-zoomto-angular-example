@@ -30,6 +30,9 @@ export declare class MapworksBaseTreeNodeEntity {
  * A Mapworks map consists of a heirarchy of layers, groups or references to other maps;
  * each of these is a node derived from this class.
  *
+ * @note Layers should be redrawn after making changes that alter how they are
+ *       displayed on the map, e.g. changing visibility or styles.
+ *
  * @see https://da/~juneidy/api/#!/api/Studio.core.entity.TreeEntity
  */
 export declare class MapworksTreeEntity extends MapworksBaseTreeNodeEntity {
@@ -39,6 +42,33 @@ export declare class MapworksTreeEntity extends MapworksBaseTreeNodeEntity {
 
   /// This layer tree node's title
   public getTitle(): string;
+
+
+
+  /**
+   * Redraws this Layer Selector node and its children.
+   *
+   * Layers should be redrawn after making changes that alter how they are
+   * displayed on the map, e.g. changing visibility or styles.
+   */
+  public redraw(): MapworksTreeEntity;
+
+  /**
+   * Determines if a Layer Selector node is visible.
+   *
+   * @param checkParent if true, the node's parents also have to be visible
+   *                    for this node to be considered visible. Defaults to `true`.
+   * @returns `true` if visible, `false` if not
+   */
+  public isVisible(checkParent?: boolean): boolean;
+
+  /**
+   * Sets the visibility of a Layer Selector node.
+   *
+   * For a layer to be visible on the map, all of its parent nodes must also be visible.
+   * @param visible true to set the node to visible
+   */
+  public setVisible(visible: boolean): MapworksTreeEntity;
 
 }
 

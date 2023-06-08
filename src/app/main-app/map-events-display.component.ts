@@ -167,6 +167,13 @@ export class MapEventsDisplayComponent {
     }
   }
 
+  async toggleLayerVisibility() {
+    const layer = await firstValueFrom(this.layer$);
+    if (layer) {
+      layer.setVisible(!layer.isVisible()).redraw();
+    }
+  }
+
   private log(...args: any[]) {
     if (this.showLogging) {
       console.log('MapEventsDisplayComponent:', ...args);
