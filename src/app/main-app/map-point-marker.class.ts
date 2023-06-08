@@ -11,24 +11,23 @@ import type * as _ from 'underscore';
  * This is an SVG marker with expanding concentric rings.
  */
 const MARKER_SVG = `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="200">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" width="140">
     <symbol id="pulse" viewBox="0 0 16 16">
-      <circle cx="8" cy="8" r="0.2" fill="black"/>
       <circle  cx="8" cy="8" r="0" fill="#FF6347">
-        <animate attributeName="r" values="0;8" keyTimes="0; 1" dur="3s" repeatCount="4" />
-        <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="3s" repeatCount="4" />
+        <animate attributeName="r" values="0;8" keyTimes="0; 1" dur="3s" repeatCount="1" />
+        <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="3s" repeatCount="1" />
       </circle>
       <circle  cx="8" cy="8" r="0" fill="#FF6347">
-        <animate attributeName="r" values="0;8" keyTimes="0; 1" begin="0.75s" dur="3s" repeatCount="4" />
-        <animate attributeName="opacity" values="1;0" keyTimes="0;1" begin="0.75s" dur="3s" repeatCount="4" />
+        <animate attributeName="r" values="0;8" keyTimes="0; 1" begin="0.75s" dur="3s" repeatCount="1" />
+        <animate attributeName="opacity" values="1;0" keyTimes="0;1" begin="0.75s" dur="3s" repeatCount="1" />
       </circle>
       <circle  cx="8" cy="8" r="0" fill="#FF6347">
-        <animate attributeName="r" values="0;8" keyTimes="0; 1" begin="1.5s" dur="3s" repeatCount="4" />
-        <animate attributeName="opacity" values="1;0" keyTimes="0;1" begin="1.5s" dur="3s" repeatCount="4" />
+        <animate attributeName="r" values="0;8" keyTimes="0; 1" begin="1.5s" dur="3s" repeatCount="1" />
+        <animate attributeName="opacity" values="1;0" keyTimes="0;1" begin="1.5s" dur="3s" repeatCount="1" />
       </circle>
       <circle  cx="8" cy="8" r="0" fill="#FF6347">
-        <animate attributeName="r" values="0;8" keyTimes="0; 1" begin="2.25s" dur="3s" repeatCount="4" />
-        <animate attributeName="opacity" values="1;0" keyTimes="0;1" begin="2.25s" dur="3s" repeatCount="4" />
+        <animate attributeName="r" values="0;8" keyTimes="0; 1" begin="2.25s" dur="3s" repeatCount="1" />
+        <animate attributeName="opacity" values="1;0" keyTimes="0;1" begin="2.25s" dur="3s" repeatCount="1" />
       </circle>
       <circle cx="8" cy="8" r="0.2" fill="black"/>
     </symbol>
