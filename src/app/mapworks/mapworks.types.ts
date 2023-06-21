@@ -1,14 +1,14 @@
 import type {
-  SigninPopupArgs,
-  SignoutRedirectArgs,
-  User,
-  UserManager,
-  UserManagerSettings,
-  UserProfile,
+    SigninPopupArgs,
+    SignoutRedirectArgs,
+    User,
+    UserManager,
+    UserManagerSettings,
+    UserProfile
 } from 'oidc-client-ts';
-import { Observable, fromEvent as rxjsFromEvent } from 'rxjs';
-
+import { fromEvent as rxjsFromEvent, Observable } from 'rxjs';
 import type * as _ from 'underscore';
+
 
 /// A basic JSON definition use when concrete types/interfaces don't (yet) exist
 export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
@@ -24,6 +24,8 @@ export declare class MapworksBaseTreeNodeEntity {
   /// Find the first node with the specified reference ID
   public findByReferenceId(refId: string): MapworksTreeEntity;
 
+  /// Find the first node with the specified title
+  public findByTitle(title: string): MapworksTreeEntity;
 }
 
 /**
@@ -42,8 +44,6 @@ export declare class MapworksTreeEntity extends MapworksBaseTreeNodeEntity {
 
   /// This layer tree node's title
   public getTitle(): string;
-
-
 
   /**
    * Redraws this Layer Selector node and its children.
@@ -70,6 +70,12 @@ export declare class MapworksTreeEntity extends MapworksBaseTreeNodeEntity {
    */
   public setVisible(visible: boolean): MapworksTreeEntity;
 
+  /// Adds a child to this node.
+  public add(treeVectorLayerEntity: MapworksTreeVectorLayerEntity): MapworksTreeEntity;
+
+  /// Sets the draw order of this layer.
+  public setDrawOrder(drawOrder: number): MapworksTreeEntity;
+
 }
 
 /**
@@ -92,11 +98,23 @@ export declare class MapworksTreeLayerEntity extends MapworksTreeEntity {
  */
 export declare class MapworksTreeVectorLayerEntity extends MapworksTreeLayerEntity {
 
-  ///
-  public constructor(options: any, mapOptions: { map: MapworksMap });
+  /// Layer options
+  public constructor(
+    options: {
+      title: string,
+      visible: boolean,
+      hidden: boolean,
+      labelled: boolean,
+      styles: any,
+      fields: any,
+      layerFields: any,
+      source: any,
+    },
+
+    mapOptions: { map: MapworksMap }
+  );
 
 }
-
 
 /**
  *
@@ -134,6 +152,16 @@ export declare class MapworksFeatureEntity {
   ///
   public getDisplayName(): string;
 
+  /// Gets the length of the feature. If the feature is a polygon, this method will return the perimeter.
+  public getLength(
+    /// Optional (-1 for null) segment index for line or polygon type features only.
+    segment?: number
+  ): number;
+
+
+  /// Sets this feature's field values.
+  public setFields(object: any): void;
+
 }
 
 ///
@@ -166,6 +194,20 @@ export declare class MapworksFeatureEvent {
 
   /// The event type
   getType(): MapworksMapEventType;
+}
+
+
+/**
+ * An event that is generated when a user performs interactively using the mouse on the the map or features on the map.
+ */
+export declare class MapworksMeasureEvent {
+
+  /// The non-null feature associated with this event. Measurements can be obtained by calling length() and area() on this feature.
+  feature: MapworksFeatureEntity;
+
+  /// The analysis module that fired this event.
+  module: MapworksAnalysisModule;
+
 }
 
 /**
@@ -284,78 +326,104 @@ export declare class MapworksFeatureDisplayTemplates {
   feature?: (context: MapworksFeatureDisplayContext) => string;
 }
 
+export declare class MapworksAnalysisModule {
+
+  /// Set the layer to draw to.
+  public setLayer(layerEntity: MapworksTreeEntity): void;
+
+  /// Perform a measurement by drawing a line or polygon on the map.
+  public measure(includeArea: boolean): void;
+
+  /// Start this module, cancelling any previous module's operations.
+  public start(): void;
+
+  /// Stop this module's current (if active).
+  public stop(): void;
+
+  /// Stop this module's current (if active).
+  public on(
+    event: MapworksMeasureEventType,
+    callback: (event: MapworksMeasureEvent) => void,
+    context?: any
+  ): any;
+
+}
+
 ///
 export enum MapworksFeatureType {
   ///
-	UNKNOWN = 0,
+  UNKNOWN = 0,
 
-	/// Point
-	POINT = 1,
+  /// Point
+  POINT = 1,
 
-	/// Polyline
-	POLYLINE = 2,
+  /// Polyline
+  POLYLINE = 2,
 
-	/// Text
-	TEXT = 3,
+  /// Text
+  TEXT = 3,
 
-	/// Circle
-	CIRCLE = 4,
+  /// Circle
+  CIRCLE = 4,
 
-	/// Polygon
-	POLYGON = 5,
+  /// Polygon
+  POLYGON = 5,
 
-	/// Rectangle
-	RECTANGLE = 6,
+  /// Rectangle
+  RECTANGLE = 6,
 
-	/// Multi geometry feature
-	MULTI = 7,
+  /// Multi geometry feature
+  MULTI = 7,
 
-	/// Image
-	IMAGE = 8,
+  /// Image
+  IMAGE = 8,
 
-	/// Annotation
-	ANNOTATION = 16
+  /// Annotation
+  ANNOTATION = 16
 }
 
 ///
 export enum MapworksFeatureEventType {
-	/**
-	 * An event triggered by mouse over a feature.
-	 */
-	MOUSEOVER = 0,
-	/**
-	 * A mouse click event on the map or feature.
-	 */
-	MOUSECLICK = 1,
-	/**
-	 * A right click event on the map or feature.
-	 */
-	MOUSECLICK_RIGHT = 2,
-	/**
-	 * A 'mouse press' or 'touch-start' event.
-	 */
-	MOUSEDOWN = 3,
-	/**
-	 * A tooltip event when the mouse position is at a position over period of
-	 * time. This is used to display the tooltip for a feature.
-	 */
-	TOOLTIP = 4
+  /**
+   * An event triggered by mouse over a feature.
+   */
+  MOUSEOVER = 0,
+  /**
+   * A mouse click event on the map or feature.
+   */
+  MOUSECLICK = 1,
+  /**
+   * A right click event on the map or feature.
+   */
+  MOUSECLICK_RIGHT = 2,
+  /**
+   * A 'mouse press' or 'touch-start' event.
+   */
+  MOUSEDOWN = 3,
+  /**
+   * A tooltip event when the mouse position is at a position over period of
+   * time. This is used to display the tooltip for a feature.
+   */
+  TOOLTIP = 4
 };
 
 /**
  * The TooltipView render mode.
  */
 export enum MapworksTooltipViewMode {
-	/** Render tooltip view as stand alone view */
-	VIEW = 'view',
-	/** Render tooltip view as part of composite view */
-	CHILD_VIEW = 'childView'
+  /** Render tooltip view as stand alone view */
+  VIEW = 'view',
+  /** Render tooltip view as part of composite view */
+  CHILD_VIEW = 'childView'
 };
 
 ///
 export type MapworksMapFeatureEventType = 'feature:mouseover' | 'feature:mouseclick' | 'feature:tooltip' | 'feature:longpress'; // XXX TODO Better name
 ///
 export type MapworksMapEventType = 'ready' | 'accessToken:change' | 'session:change' | 'before:render' | MapworksMapFeatureEventType;
+///
+export type MapworksMeasureEventType = 'analysis:measure' | 'analysis:deselect' | 'analysis:select' | 'analysis:select:clear' | 'before:destroy' | 'destroy';
+
 
 ///
 export interface MapworksEventEmitter<TContext, T> {
@@ -429,6 +497,9 @@ export declare class MapworksMap {
   public getViewCenter(): number[]
 
   ///
+  public getModule(args: string): MapworksAnalysisModule;
+
+  ///
   public retrieveLayersByReferenceIds(refIds: string[]): Promise<MapworksTreeLayerEntity[]>;
 
   /// Search a set of layers for features based on a criteria filter.
@@ -500,10 +571,10 @@ export declare class MapworksStudioTooltipControl extends MapworksStudioControl 
 
   // XXX TODO Confirm callback operation
   //  * @param {Function} cb Callback used when there is template data that
-	//  * requires asynchronous loading. Call this function with the template
-	//  * object described above to render the tooltip again with updated
-	//  * template.
-	//  */
+  //  * requires asynchronous loading. Call this function with the template
+  //  * object described above to render the tooltip again with updated
+  //  * template.
+  //  */
   public on(eventType: 'before:render', callback: (featureOrFeatures: MapworksFeatureEntity, templateObject: MapworksFeatureDisplayTemplates, rerenderCallback: (templateObject: MapworksFeatureDisplayTemplates) => void) => void): void; // XXX TODO "all features"
 
 }
@@ -557,25 +628,25 @@ export interface MapworksLayerSearchInput {
  */
 export interface MapworksAnimateToOptions {
   /**
-	 * The X coordinate to animate to; provide either `(x,y)` or `extent`.
+   * The X coordinate to animate to; provide either `(x,y)` or `extent`.
    */
-   x?: number;
+  x?: number;
 
   /**
-	 * The Y coordinate to animate to; provide either `(x,y)` or `extent`.
+   * The Y coordinate to animate to; provide either `(x,y)` or `extent`.
    */
-   y?: number;
+  y?: number;
 
   /**
-	 * The X coordinate to animate to; provide either `(x,y)` or `extent`.
+   * The X coordinate to animate to; provide either `(x,y)` or `extent`.
    */
-   extent?: any; // XXX TODO
+  extent?: any; // XXX TODO
 
   ///
   targetScale?: number;
 
   /**
-	 * The multiplier applied to the target scale.
+   * The multiplier applied to the target scale.
    * @defaultValue 1
    */
   targetScaleMultiplier?: number
@@ -586,14 +657,14 @@ export interface MapworksAnimateToOptions {
   /**
    * The maximum duration of the animation in milliseconds,
    * noting that the animation can be shorter if the view
-	 * is closer to the destination scale or position.
+   * is closer to the destination scale or position.
    * @defaultValue 4000
    */
   duration?: number;
 
   /*
-	 * The function called when complete.
-	 */
+   * The function called when complete.
+   */
   callback?: () => void;
 }
 
@@ -754,7 +825,7 @@ export declare class MapworksStudio {
  */
 declare global {
   interface Window {
-    // map: any;
+    map: any;
     Studio: MapworksStudio;
   }
 }

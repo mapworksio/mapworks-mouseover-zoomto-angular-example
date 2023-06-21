@@ -1,30 +1,29 @@
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  Input,
-  OnInit,
-  ViewEncapsulation,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Inject,
+    Input,
+    OnInit,
+    ViewEncapsulation
 } from '@angular/core';
 import {
-  Observable,
-  filter,
-  firstValueFrom,
-  map,
-  switchMap,
-  tap,
-  throttleTime,
+    filter,
+    firstValueFrom,
+    map, Observable, switchMap,
+    tap,
+    throttleTime
 } from 'rxjs';
-import { MapworksMapService } from '../mapworks-map.service';
+import { AppConfig, APP_CONFIG } from '../app.config';
 import {
-  MapworksFeatureEvent,
-  MapworksLayerSearchInput,
-  MapworksTreeLayerEntity,
-  fromEvent,
+    fromEvent,
+    MapworksFeatureEvent,
+    MapworksLayerSearchInput,
+    MapworksMeasureEvent,
+    MapworksTreeLayerEntity
 } from '../mapworks';
+import { MapworksMapService } from '../mapworks-map.service';
 import { MapPointMarker } from './map-point-marker.class';
-import { APP_CONFIG, AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-map-events-display-feature',
@@ -38,9 +37,9 @@ import { APP_CONFIG, AppConfig } from '../app.config';
 export class MapEventsDisplayFeatureComponent implements OnInit {
   @Input() eventFeature$!: Observable<MapworksFeatureEvent>;
   e$!: Observable<MapworksFeatureEvent>;
-  constructor(private changeDetector: ChangeDetectorRef) {}
+  constructor(private changeDetector: ChangeDetectorRef) { }
   ngOnInit() {
-    this.e$ = this.eventFeature$.pipe(
+    this.e$ = this.eventFeature$?.pipe(
       // we force detectChanges() to get instantly responsive display of the mouseover
       tap(() => setTimeout(() => this.changeDetector.detectChanges(), 0))
     );
@@ -69,10 +68,13 @@ export class MapEventsDisplayComponent {
   readonly mouseoverFeature$: Observable<MapworksFeatureEvent>;
   readonly mouseTooltipFeature$: Observable<MapworksFeatureEvent>;
   readonly mouseClickFeature$: Observable<MapworksFeatureEvent>;
+  public measureDistance$: string = '0';
 
   private mapPointMarker?: MapPointMarker;
 
   private showLogging = false;
+
+  public isModuleStarted = false;
 
   constructor(
     @Inject(APP_CONFIG) public appConfig: AppConfig,
@@ -171,6 +173,25 @@ export class MapEventsDisplayComponent {
     const layer = await firstValueFrom(this.layer$);
     if (layer) {
       layer.setVisible(!layer.isVisible()).redraw();
+    }
+  }
+
+  async toggleMeasureTool() {
+    const map$ = this.mapService.mapService.getMap();
+    const markupLayer = map$.getTree().findByTitle('Markup Layer');
+    const module = map$.getModule('analysis');
+    module.setLayer(markupLayer);
+    if (this.isModuleStarted) {
+      // Stop this module's current (if active)
+      module.stop();
+    } else {
+      this.isModuleStarted = true;
+      // Perform a measurement by drawing a line or polygon on the map. false to exclude area in measurement
+      module.measure(false);
+      module.on('analysis:measure', (e: MapworksMeasureEvent) => {
+        this.measureDistance$ = e?.feature.getLength().toFixed(3) ?? '0';
+        e?.feature.setFields({ 'Title': `${this.measureDistance$} m` })
+      });
     }
   }
 
