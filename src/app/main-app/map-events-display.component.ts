@@ -17,8 +17,11 @@ import {
 import { AppConfig, APP_CONFIG } from '../app.config';
 import {
     fromEvent,
+    MapworksAnalysisModule,
     MapworksFeatureEvent,
     MapworksLayerSearchInput,
+    MapworksMarkupEvent,
+    MapworksMarkupModule,
     MapworksMeasureEvent,
     MapworksTreeLayerEntity
 } from '../mapworks';
@@ -69,12 +72,17 @@ export class MapEventsDisplayComponent {
   readonly mouseTooltipFeature$: Observable<MapworksFeatureEvent>;
   readonly mouseClickFeature$: Observable<MapworksFeatureEvent>;
   public measureDistance$: string = '0';
+  public selectedFeature: any = null;
+  public moveFrom: any = null;
+  public moveTo: any = null;
 
   private mapPointMarker?: MapPointMarker;
 
   private showLogging = false;
 
-  public isModuleStarted = false;
+  public isModuleStarted: boolean = false;
+
+  public isModuleMarkupStarted: boolean = false;
 
   constructor(
     @Inject(APP_CONFIG) public appConfig: AppConfig,
@@ -177,13 +185,14 @@ export class MapEventsDisplayComponent {
   }
 
   async toggleMeasureTool() {
-    const map$ = this.mapService.mapService.getMap();
-    const markupLayer = map$.getTree().findByTitle('Markup Layer');
-    const module = map$.getModule('analysis');
+    const map = await firstValueFrom(this.mapService.mapService.map$);
+    const markupLayer = map.getTree().findByTitle('Markup Layer');
+    const module = <MapworksAnalysisModule>map.getModule('analysis');
     module.setLayer(markupLayer);
     if (this.isModuleStarted) {
       // Stop this module's current (if active)
       module.stop();
+      this.isModuleStarted = false;
     } else {
       this.isModuleStarted = true;
       // Perform a measurement by drawing a line or polygon on the map. false to exclude area in measurement
@@ -191,6 +200,36 @@ export class MapEventsDisplayComponent {
       module.on('analysis:measure', (e: MapworksMeasureEvent) => {
         this.measureDistance$ = e?.feature.getLength().toFixed(3) ?? '0';
         e?.feature.setFields({ 'Title': `${this.measureDistance$} m` })
+      });
+    }
+  }
+
+  async toggleMoveTool() {
+    this.doIdentifyLayer();
+    const map = await firstValueFrom(this.mapService.mapService.map$);
+    const layer = await firstValueFrom(this.layer$);
+    const module: MapworksMarkupModule = <MapworksMarkupModule>map.getModule('markup');
+    this.selectedFeature = null;
+    this.moveFrom = null;
+    this.moveTo = null;
+    module.setLayer(layer);
+
+    if (this.isModuleMarkupStarted) {
+      // Stop this module's current (if active)
+      module.stop();
+      this.isModuleMarkupStarted = false;
+    } else {
+      this.isModuleMarkupStarted = true;
+      module.move(layer);
+
+      module.on('markup:move:start', (e: MapworksMarkupEvent) => {
+        this.selectedFeature = e.feature.attributes.fields['Name'];
+        this.moveFrom = `[${e.feature.getX()},${e.feature.getY()}]`;
+        this.moveTo = null;
+      });
+
+      module.on('markup:move:end', (e: MapworksMarkupEvent) => {
+        this.moveTo = `[${e.feature.getX()},${e.feature.getY()}]`;
       });
     }
   }

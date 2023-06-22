@@ -158,6 +158,11 @@ export declare class MapworksFeatureEntity {
     segment?: number
   ): number;
 
+  /// The X Position of the mouse which caused this event.
+  getX(): number;
+
+  /// The Y Position of the mouse which caused this event.
+  getY(): number;
 
   /// Sets this feature's field values.
   public setFields(object: any): void;
@@ -207,6 +212,22 @@ export declare class MapworksMeasureEvent {
 
   /// The analysis module that fired this event.
   module: MapworksAnalysisModule;
+
+}
+
+export declare class MapworksMarkupEvent {
+
+  /// The markup feature.
+  feature: MapworksFeatureEntity;
+
+  /// The markup module that fired this event.
+  module: MapworksMarkupModule;
+
+  /// Pixel coordinate of the event, if available.
+  x: number;
+
+  /// Pixel coordinate of the event, if available.
+  y: number;
 
 }
 
@@ -340,10 +361,33 @@ export declare class MapworksAnalysisModule {
   /// Stop this module's current (if active).
   public stop(): void;
 
-  /// Stop this module's current (if active).
+  ///
   public on(
     event: MapworksMeasureEventType,
     callback: (event: MapworksMeasureEvent) => void,
+    context?: any
+  ): any;
+
+}
+
+export declare class MapworksMarkupModule {
+
+  /// Set the layer to draw to.
+  public setLayer(layerEntity: MapworksTreeEntity): void;
+
+  /// Move markup features to another location.
+  public move(layerEntity: MapworksTreeEntity): void;
+
+  /// Start this module, cancelling any previous module's operations.
+  public start(): void;
+
+  /// Stop this module's current (if active).
+  public stop(): void;
+
+  ///
+  public on(
+    event: MapworksMarkupEventType,
+    callback: (event: MapworksMarkupEvent) => void,
     context?: any
   ): any;
 
@@ -423,6 +467,36 @@ export type MapworksMapFeatureEventType = 'feature:mouseover' | 'feature:mousecl
 export type MapworksMapEventType = 'ready' | 'accessToken:change' | 'session:change' | 'before:render' | MapworksMapFeatureEventType;
 ///
 export type MapworksMeasureEventType = 'analysis:measure' | 'analysis:deselect' | 'analysis:select' | 'analysis:select:clear' | 'before:destroy' | 'destroy';
+///
+export type MapworksMarkupEventType =
+  /// An event that is called prior to a feature being copied. This operation can be cancelled.
+  'markup:copy'
+  /// An event that is called prior to a feature being deleted. This operation can be cancelled.
+  | 'markup:delete'
+  /// An event that is called when a feature currently being drawn has been cancelled.
+  | 'markup:draw:cancelled'
+  /// An event that is called prior to completing a markup feature. This operation can be cancelled.
+  | 'markup:draw:end'
+  /// An event that is called after completing a markup feature.
+  | 'markup:draw:finished'
+  /// An event that is called prior to drawing a feature. This operation can be cancelled.
+  | 'markup:draw:start'
+  /// An event that is called when the feature currently being drawn has been updated.
+  | 'markup:draw:updated'
+  /// An event that is called prior to a feature being selected for editing. This operation can be cancelled.
+  | 'markup:edit'
+  /// An event that is called when the module cannot edit the specified feature.
+  | 'markup:failed'
+  /// An event that is called prior to a feature being moved. This operation can be cancelled.
+  | 'markup:move:end'
+  /// An event that is called prior to a feature being selected for moving. This operation can be cancelled.
+  | 'markup:move:start'
+  /// An event that is called prior to a feature being edited. This operation can be cancelled.
+  | 'markup:update:end'
+  /// An event that is called after editing a feature.
+  | 'markup:update:finished'
+  /// An event that is called when the feature currently edited or moved has been updated.
+  | 'markup:updated';
 
 
 ///
@@ -497,7 +571,7 @@ export declare class MapworksMap {
   public getViewCenter(): number[]
 
   ///
-  public getModule(args: string): MapworksAnalysisModule;
+  public getModule(args: 'markup' | 'analysis'): MapworksAnalysisModule | MapworksMarkupModule;
 
   ///
   public retrieveLayersByReferenceIds(refIds: string[]): Promise<MapworksTreeLayerEntity[]>;

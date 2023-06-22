@@ -25,12 +25,19 @@
     <span>{{measureDistance$}}m</span>
   </div>
 
+  <div style="display: flex; gap: 8px;" *ngIf="isModuleMarkupStarted || moveTo">
+    <span>Move Feature <b>{{selectedFeature}}</b></span>
+    <span *ngIf="moveTo"> from {{moveFrom}}</span>
+    <span *ngIf="moveTo"> to {{moveTo}}</span>
+  </div>
+
   <div style="display: flex; gap: 8px; margin-top: 8px;">
     <button (click)="doIdentifyLayer()">Identify Layer</button>
     <button (click)="doZoomTo()">Zoom to Random Feature</button>
     <button (click)="doRemoveMarker()">Remove Feature Marker</button>
     <button (click)="toggleLayerVisibility()">Toggle Layer Visibility</button>
     <button (click)="toggleMeasureTool()">Measure Tool</button>
+    <button (click)="toggleMoveTool()">{{isModuleMarkupStarted ? "Stop " : "Start " }}Move Tool</button>
   </div>
 
 </div>
