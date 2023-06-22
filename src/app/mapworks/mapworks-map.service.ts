@@ -1,17 +1,15 @@
 import {
   SigninPopupArgs,
-  SignoutRedirectArgs,
-  User,
-  UserManager,
+  SignoutRedirectArgs
 } from 'oidc-client-ts';
-import { BehaviorSubject, Observable, ReplaySubject, from, fromEvent, map, of, switchMap, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, fromEvent, map, of, ReplaySubject, switchMap } from 'rxjs';
 import {
   MapworksMap,
   MapworksStudio,
   MapworksStudioConfigOptions,
   MapworksUser,
   MapworksUserManager,
-  MapworksUserManagerSettings,
+  MapworksUserManagerSettings
 } from './mapworks.types';
 
 declare let Studio: MapworksStudio;
@@ -19,6 +17,8 @@ declare let Studio: MapworksStudio;
 const DEFAULT_MAPWORKS_API_ORIGIN = 'https://api.mapworks.io';
 
 const DEFAULT_MAP_NAME = 'default';
+
+const DEFAULT_MARKUP_LAYER_NAME = 'Markup Layer';
 
 /**
  * Services which loads Mapworks Studio and handled initialisation of
@@ -109,7 +109,7 @@ export class MapworksMapService {
   constructor(
     private defaultLoginProvider?: MapworksUserManagerSettings,
     private apiOrigin = DEFAULT_MAPWORKS_API_ORIGIN
-  ) {}
+  ) { }
 
   /**
    * Load Studio.
@@ -180,7 +180,7 @@ export class MapworksMapService {
 
   ///
   public async signinAnonymous(): Promise<MapworksUser | null> {
-    if(this.defaultLoginProvider?.anonymousUser) {
+    if (this.defaultLoginProvider?.anonymousUser) {
       if (this.map) {
         return await this.map.loginAnonymous();
       } else {
@@ -241,6 +241,9 @@ export class MapworksMapService {
     });
     map.on('ready', () => {
       console.log('MAP ready');
+
+      // Create adhoc Markup Layer when Map is ready
+      this.createAdHocLayer();
     });
     return map;
   }
@@ -299,5 +302,65 @@ export class MapworksMapService {
     }
 
     return await this.userManager!.init();
+  }
+
+  /**
+   * Crate a Markup Layer
+   *
+   */
+  private createAdHocLayer() {
+    // Check if Markup adhoc layer exists
+    let markupLayer$ = this.getMap().getTree().findByTitle(DEFAULT_MARKUP_LAYER_NAME);
+    if (markupLayer$) { return; }
+
+    // Create Markup adhoc layer if it does not exist
+    const markupLayer = new Studio.core.entity.TreeVectorLayerEntity({
+      title: DEFAULT_MARKUP_LAYER_NAME,
+      visible: true,
+      hidden: true, //hide from layer tree
+      labelled: true,
+      styles: {
+        '#': {
+          'default': {
+            pointFill: 'blue',
+            lineFill: 'blue',
+            polygonFill: 'blue',
+            polygonOpacity: 0.3,
+            hoverTemplate: '|title|'
+          },
+          'active': {
+            pointFill: '#87cefa',
+            lineFill: '#87cefa',
+            polygonFill: '#87cefa',
+            polygonOpacity: 0.3
+          }
+        }
+      },
+      fields: {
+        title: {
+          name: 'title',
+          title: 'Title'
+        },
+      },
+      layerFields: [
+        { name: 'title' },
+      ],
+      source: {
+        adhoc: {
+          features: {},
+          fields: [{
+            name: 'title',
+            send: true,
+            type: 311
+          }]
+        }
+      },
+    }, {
+      map: this.getMap()
+    });
+    this.getMap().getTree().add(markupLayer);
+    // set markup layer draw order to top
+    markupLayer$ = this.getMap().getTree().findByTitle(DEFAULT_MARKUP_LAYER_NAME);
+    markupLayer$.setDrawOrder(-1000);
   }
 }
