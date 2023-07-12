@@ -14,7 +14,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Running in CodeSandbox
 
-This example may be run in CodeSandbox:
+This example may be run in CodeSandboxs:
 
 - https://codesandbox.io/p/github/mapworksio/mapworks-mouseover-zoomto-angular-example
 
