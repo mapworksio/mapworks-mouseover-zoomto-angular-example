@@ -757,13 +757,13 @@ export declare class MapworksStudio {
   $: any; // XXX TODO
 }
 
-/**
- * Once Studio is loaded, the global reference `Studio` of type
- * MapworksStudio is defined.
- */
-declare global {
-  interface Window {
-    // map: any;
-    Studio: MapworksStudio;
-  }
-}
+// /**
+//  * Once Studio is loaded, the global reference `Studio` of type
+//  * MapworksStudio is defined.
+//  */
+// declare global {
+//   interface Window {
+//     // map: any;
+//     Studio: MapworksStudio;
+//   }
+// }
