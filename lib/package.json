@@ -1,0 +1,23 @@
+{
+    "name": "demo-example-lib",
+    "version": "1.0.0",
+    "main": "lib/index.js",
+    "types": "lib",
+    "scripts": {
+      "build": "tsc -p ."
+    },
+    "keywords": [],
+    "author": "bas@basarat.com",
+    "license": "MIT",
+    "dependencies": {
+        "oidc-client-ts": "^2.2.4",
+        "rxjs": "~7.8.0"
+        
+        
+      },
+      "devDependencies": {
+        
+        "@types/underscore": "^1.11.5",
+        "typescript": "~5.0.2"
+      }
+  }
